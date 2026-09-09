@@ -1,3 +1,5 @@
+import base64
+import aiohttp
 from openai import AsyncOpenAI
 from config import config
 
@@ -36,8 +38,24 @@ async def chat(text: str) -> str:
 
     return response.choices[0].message.content.strip()
 
-
 async def parse_rankcheck_image(image_url: str) -> str:
+    timeout = aiohttp.ClientTimeout(total=20)
+
+    async with aiohttp.ClientSession(timeout=timeout) as session:
+        async with session.get(
+            image_url,
+            headers={"User-Agent": "Rotom/0.4"},
+        ) as resp:
+            resp.raise_for_status()
+            image_bytes = await resp.read()
+            content_type = resp.headers.get(
+                "Content-Type",
+                "image/jpeg"
+            ).split(";")[0]
+
+    image_b64 = base64.b64encode(image_bytes).decode("utf-8")
+    data_url = f"data:{content_type};base64,{image_b64}"
+
     response = await client.chat.completions.create(
         model=config.gemini_model,
         messages=[
@@ -62,7 +80,7 @@ async def parse_rankcheck_image(image_url: str) -> str:
                     {
                         "type": "image_url",
                         "image_url": {
-                            "url": image_url,
+                            "url": data_url,
                         },
                     },
                 ],
@@ -71,3 +89,5 @@ async def parse_rankcheck_image(image_url: str) -> str:
     )
 
     return response.choices[0].message.content.strip()
+
+    
