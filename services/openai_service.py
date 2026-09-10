@@ -27,13 +27,21 @@ client = AsyncOpenAI(
 )
 
 
-async def chat(text: str) -> str:
+async def chat(text: str, history: list | None = None) -> str:
+    messages = [
+        {"role": "system", "content": SYSTEM_PROMPT},
+    ]
+
+    if history:
+        messages.extend(history)
+
+    messages.append(
+        {"role": "user", "content": text}
+    )
+
     response = await client.chat.completions.create(
         model=config.gemini_model,
-        messages=[
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": text},
-        ],
+        messages=messages,
     )
 
     return response.choices[0].message.content.strip()
