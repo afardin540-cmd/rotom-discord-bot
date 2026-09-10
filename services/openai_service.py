@@ -22,10 +22,9 @@ the relevant tool/service, not from guessing.
 
 
 client = AsyncOpenAI(
-    api_key=config.gemini_api_key,
-    base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
+    api_key=config.openai_api_key,
+    base_url=f"{config.ai_server_url}/v1",
 )
-
 
 async def chat(text: str, history: list | None = None) -> str:
     messages = [
@@ -40,7 +39,7 @@ async def chat(text: str, history: list | None = None) -> str:
     )
 
     response = await client.chat.completions.create(
-        model=config.gemini_model,
+        model=config.openai_model,
         messages=messages,
     )
 
