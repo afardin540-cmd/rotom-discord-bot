@@ -14,8 +14,11 @@ class Config:
     gemini_model: str = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
 
     # Legacy OpenAI setting — kept so the rest of the project remains compatible
-    openai_api_key: str = os.getenv("OPENAI_API_KEY", "")
-    openai_model: str = os.getenv("OPENAI_MODEL", "")
+        # Local AI / OpenAI settings
+    openai_api_key: str = os.getenv("OPENAI_API_KEY", "local-token")
+    openai_model: str = os.getenv("OPENAI_MODEL", "qwen2.5-1.5b-instruct")
+    ai_server_url: str = os.getenv("AI_SERVER_URL", "https://injection-qualities-paying-engage.trycloudflare.com")
+
 
     chat_channel_id: int | None = (
         int(os.getenv("CHAT_CHANNEL_ID"))
